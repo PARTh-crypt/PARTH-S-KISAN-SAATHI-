@@ -3,186 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PARTH'S ELITE | Official Business AI</title>
+    <title>PARTH'S Kisan Saathi</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <style>
-        :root { --p-gold: #fbbf24; --p-dark: #020617; --p-emerald: #10b981; }
-        body { background: var(--p-dark); color: white; font-family: 'Inter', sans-serif; overflow: hidden; margin: 0; }
+        :root { 
+            --gold: #d4af37; 
+            --dark-green: #0f1a0d;
+            --main-green: #1a3a17;
+            --silk: #f8fafc;
+        }
+        body { 
+            background: var(--silk); 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            margin: 0; padding: 0; 
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 🏹 OFFICIAL SPLASH SCREEN */
+        #splash {
+            position: fixed; inset: 0; z-index: 10000;
+            background: var(--dark-green);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1);
+        }
+        .logo-svg { width: 220px; filter: drop-shadow(0 0 25px rgba(212,175,55,0.6)); animation: pulse 2s infinite; }
+        .brand-title { color: var(--gold); font-size: 38px; font-weight: 900; line-height: 0.9; margin-top: 20px; text-align: center; }
         
-        /* 🏹 ELITE SPLASH */
-        #splash { position: fixed; inset: 0; z-index: 10000; background: var(--p-dark); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #arrow-vector { font-size: 6rem; filter: drop-shadow(0 0 20px var(--p-gold)); transition: 1s cubic-bezier(0.6, -0.28, 0.735, 0.045); }
-        .shoot-away { transform: translateY(-150vh) rotate(-45deg) scale(0); opacity: 0; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
-        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.07); }
-        .page { display: none; height: 100vh; overflow-y: auto; padding-bottom: 180px; }
-        .active-page { display: block; animation: fadeIn 0.5s; }
+        /* MAIN APP */
+        #app-body { display: none; padding-bottom: 120px; }
+        .hero { 
+            background: linear-gradient(to bottom, var(--main-green), #2d5a27);
+            padding: 45px 20px 85px; border-radius: 0 0 50px 50px; color: white;
+        }
 
-        /* 🤖 CHATBOT UI */
-        #chat-window { height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; }
-        .msg { max-width: 80%; padding: 12px 18px; border-radius: 20px; font-size: 14px; line-height: 1.4; }
-        .msg-ai { align-self: flex-start; background: rgba(251, 191, 36, 0.1); border-left: 4px solid var(--p-gold); color: white; }
-        .msg-user { align-self: flex-end; background: var(--p-emerald); color: black; font-weight: bold; }
+        /* TOOLS GRID */
+        .grid-section { padding: 0 20px; margin-top: -50px; }
+        .tools-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .tool-btn {
+            background: white; border-radius: 28px; padding: 25px 15px;
+            display: flex; flex-direction: column; align-items: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;
+        }
+        .tool-btn:active { transform: scale(0.95); background: #f0fdf4; }
 
-        .mic-core { width: 90px; height: 90px; background: var(--p-gold); border-radius: 50%; border: 8px solid var(--p-dark); display: flex; align-items: center; justify-content: center; position: relative; }
-        .listening-ring { position: absolute; inset: -5px; border-radius: 50%; border: 2px solid var(--p-gold); animation: pulse 1.5s infinite; opacity: 0; }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
-        
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--p-gold); border-radius: 10px; }
+        /* AI DRAWER */
+        #ai-drawer {
+            position: fixed; bottom: -100%; left: 0; width: 100%; height: 85vh;
+            background: white; z-index: 5000; border-radius: 40px 40px 0 0;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2); transition: 0.4s ease-out;
+            display: flex; flex-direction: column;
+        }
+        #ai-drawer.active { bottom: 0; }
+        .chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { max-width: 80%; padding: 15px; border-radius: 20px; font-size: 14px; }
+        .ai-msg { align-self: flex-start; background: #f1f5f9; color: #334155; border-left: 5px solid var(--gold); }
+        .user-msg { align-self: flex-end; background: var(--main-green); color: white; }
+
+        /* NAV */
+        nav { 
+            position: fixed; bottom: 20px; left: 20px; right: 20px; height: 75px;
+            background: white; border-radius: 40px; display: flex;
+            justify-content: space-around; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .ai-trigger { background: var(--gold); width: 60px; height: 60px; border-radius: 50%; margin-top: -40px; border: 5px solid white; display: flex; align-items: center; justify-content: center; font-size: 24px; }
     </style>
 </head>
 <body>
 
     <div id="splash">
-        <div id="arrow-vector">🏹</div>
-        <h1 class="text-6xl font-black text-[#fbbf24] mt-4">PARTH'S</h1>
-        <p class="text-emerald-500 font-bold uppercase tracking-[0.3em]">Corporate Intelligence</p>
+        <svg class="logo-svg" viewBox="0 0 200 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 90C20 90 40 20 100 20C160 20 180 90 180 90" stroke="#d4af37" stroke-width="8" stroke-linecap="round"/>
+            <path d="M20 90C20 90 40 160 100 160C160 160 180 90 180 90" stroke="#d4af37" stroke-width="8" stroke-linecap="round"/>
+            <line x1="100" y1="20" x2="100" y2="160" stroke="#d4af37" stroke-width="2"/>
+            <path d="M80 75L100 25L120 75" stroke="#d4af37" stroke-width="8" stroke-linejoin="round"/>
+            <rect x="90" y="85" width="20" height="25" rx="4" fill="#d4af37"/>
+        </svg>
+        <div class="brand-title">PARTH'S<br><span style="font-size: 18px; letter-spacing: 4px; color: white;">KISAN SAATHI</span></div>
+        <button onclick="System.start()" style="margin-top: 50px; background: var(--gold); color: black; padding: 15px 50px; border-radius: 50px; font-weight: 900;">AAGE BADHEIN</button>
     </div>
 
-    <div id="app" class="opacity-0 transition-opacity duration-1000">
-        
-        <header class="p-6 glass rounded-b-[40px] flex justify-between items-center sticky top-0 z-50">
-            <h1 class="text-2xl font-black text-yellow-500">PARTH ELITE</h1>
-            <div class="px-3 py-1 bg-emerald-500/20 rounded-full text-[10px] text-emerald-400 font-bold border border-emerald-500/30">BUSINESS MODE</div>
-        </header>
-
-        <main class="p-5">
-            <section class="glass p-6 rounded-[40px] mb-8 border-b-4 border-yellow-500">
-                <div class="flex items-center gap-3 mb-4">
-                    <span class="text-3xl">🤖</span>
-                    <div>
-                        <h2 class="text-xs font-black text-yellow-500 uppercase">Parth Official Bot</h2>
-                        <p class="text-[9px] text-gray-400">Powered by Your Company Logic</p>
-                    </div>
-                </div>
-                
-                <div id="chat-window" class="mb-4">
-                    <div class="msg msg-ai">नमस्ते! मैं आपकी कंपनी का डिजिटल असिस्टेंट हूँ। मैं आपकी कैसे मदद कर सकता हूँ?</div>
-                </div>
-
-                <div class="flex gap-2">
-                    <input id="chat-input" type="text" placeholder="अपना सवाल लिखें..." class="flex-1 bg-white/5 p-4 rounded-2xl outline-none border border-white/10 text-sm">
-                    <button onclick="Core.sendMsg()" class="bg-yellow-500 text-black px-6 rounded-2xl font-black">SEND</button>
-                </div>
-            </section>
-
-            <div id="page-home" class="page active-page">
-                <div class="grid grid-cols-2 gap-4" id="cat-grid">
-                    </div>
-            </div>
-
-            <div id="page-khata" class="page">
-                <div class="bg-yellow-500 text-black p-8 rounded-[40px] mb-6">
-                    <p class="text-xs font-bold uppercase opacity-60">Total Business Expense</p>
-                    <h1 id="total-val" class="text-5xl font-black">₹0</h1>
-                </div>
-                <div class="glass p-6 rounded-[35px] space-y-3" id="ledger-history"></div>
-            </div>
-        </main>
-
-        <nav class="fixed bottom-0 w-full p-8 flex justify-center">
-            <div class="glass bg-black/90 p-2 rounded-full flex items-center justify-between w-full max-w-sm border border-white/10">
-                <button onclick="Core.navigate('home')" class="p-4 text-2xl">🏠</button>
-                <div class="mic-core" id="mic-btn" onclick="Core.startVoiceAI()">
-                    <div id="l-ring" class="hidden listening-ring"></div>
-                    <span class="text-3xl">🎙️</span>
-                </div>
-                <button onclick="Core.navigate('khata')" class="p-4 text-2xl">💰</button>
-            </div>
-        </nav>
+    <div id="app-body">
+        <div class="hero">
+            <h1 class="text-3xl font-black">नमस्ते, किसान भाई</h1>
+            <p class="text-xs text-yellow-400 font-bold uppercase mt-1">PARTH'S Official App</p>
+        </div>
+        <div class="grid-section">
+            <div class="tools-grid" id="tools"></div>
+        </div>
     </div>
+
+    <div id="ai-drawer">
+        <div class="p-5 border-b flex justify-between items-center">
+            <span class="font-black">PARTH'S AI SAATHI</span>
+            <button onclick="System.toggleAI(false)" class="text-2xl">✕</button>
+        </div>
+        <div class="chat-box" id="chat">
+            <div class="bubble ai-msg">राम-राम! मैं PARTH'S का AI साथी हूँ। पूछिए अपनी खेती से जुड़ा कोई भी सवाल।</div>
+        </div>
+        <div class="p-4 border-t flex gap-2">
+            <input id="in" type="text" placeholder="यहाँ लिखें..." class="flex-1 bg-slate-100 p-4 rounded-xl outline-none">
+            <button onclick="System.ask()" class="bg-green-800 text-white px-5 rounded-xl font-bold">BHEJEIN</button>
+        </div>
+    </div>
+
+    <nav>
+        <button onclick="location.reload()" class="text-xl">🏠</button>
+        <button onclick="System.toggleAI(true)" class="ai-trigger">🤖</button>
+        <button onclick="System.toggleAI(true)" class="text-xl">💬</button>
+    </nav>
 
     <script>
-        const Core = {
-            companyInfo: {
-                name: "Parth Solutions",
-                services: ["खेती की सलाह", "मंडी भाव", "खाता मैनेजमेंट", "बीज और खाद"],
-                mandiRate: "गेहूं: ₹2450, सरसों: ₹5300"
+        const key = ""; // Apni API Key yahan dalein
+        const System = {
+            data: [
+                {n: "Mandi Bhav", i: "📊", d: "Gehu: ₹2510, Sarson: ₹5400, Chana: ₹6100."},
+                {n: "Bimari Check", i: "🔍", d: "Patti par peela-pan Nitrogen ki kami hai. Urea ka prayog karein."},
+                {n: "Mausam", i: "☁️", d: "Agli 24 ghanto mein dhoop khili rahegi."},
+                {n: "Yojana", i: "📜", d: "PM-Kisan ki 17th kist check karne ke liye KYC zaroori hai."}
+            ],
+            start() {
+                document.getElementById('splash').style.transform = 'translateY(-100%)';
+                document.getElementById('app-body').style.display = 'block';
+                this.render();
             },
-
-            init() {
-                setTimeout(() => {
-                    document.getElementById('arrow-vector').classList.add('shoot-away');
-                    setTimeout(() => {
-                        document.getElementById('splash').style.display = 'none';
-                        document.getElementById('app').style.opacity = '1';
-                    }, 800);
-                }, 2000);
-                this.renderCats();
+            render() {
+                document.getElementById('tools').innerHTML = this.data.map(t => `
+                    <div class="tool-btn" onclick="alert('${t.d}')">
+                        <div class="text-3xl mb-2">${t.i}</div>
+                        <div class="text-xs font-black uppercase">${t.n}</div>
+                    </div>
+                `).join('');
             },
-
-            renderCats() {
-                const cats = [
-                    {n: 'AI Advisor', i: '🧠'}, {n: 'Mandi Live', i: '📊'},
-                    {n: 'Business Ledger', i: '💵'}, {n: 'Inventory', i: '📦'}
-                ];
-                const grid = document.getElementById('cat-grid');
-                cats.forEach(c => {
-                    grid.innerHTML += `<div class="glass p-8 rounded-[35px] text-center border-b-4 border-yellow-500" onclick="Core.speak('${c.n} टूल एक्टिव है')"><div class="text-4xl mb-2">${c.i}</div><h3 class="text-[10px] font-bold uppercase">${c.n}</h3></div>`;
-                });
+            toggleAI(s) { document.getElementById('ai-drawer').classList.toggle('active', s); },
+            async ask() {
+                const i = document.getElementById('in'), v = i.value.trim();
+                if(!v) return;
+                this.msg(v, 'user-msg'); i.value = "";
+                const mid = 'ai'+Date.now(); this.msg('Soch raha hoon...', 'ai-msg', mid);
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${key}`, {
+                        method: 'POST', headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({contents: [{parts: [{text: `Aap PARTH'S company ke AI assistant hain. User kisan ka sawal hai: ${v}. Hindi mein dosti se chota jawab dein.`}]}]})
+                    });
+                    const d = await res.json();
+                    document.getElementById(mid).innerText = d.candidates[0].content.parts[0].text;
+                } catch(e) { document.getElementById(mid).innerText = "Net check karein!"; }
             },
-
-            /* 🤖 CHATBOT LOGIC */
-            sendMsg() {
-                const input = document.getElementById('chat-input');
-                const text = input.value.trim();
-                if(!text) return;
-
-                this.addBubble(text, 'user');
-                input.value = "";
-
-                // AI Response Logic (Company Based)
-                setTimeout(() => {
-                    let reply = "माफ़ करें, मैं समझ नहीं पाया। क्या आप सेवाओं के बारे में पूछना चाहते हैं?";
-                    const val = text.toLowerCase();
-                    
-                    if(val.includes("मंडी") || val.includes("भाव")) reply = `आज का भाव: ${this.companyInfo.mandiRate}`;
-                    else if(val.includes("सर्विस") || val.includes("काम")) reply = `हमारी कंपनी ${this.companyInfo.services.join(", ")} में मदद करती है।`;
-                    else if(val.includes("हेलो") || val.includes("प्रणाम")) reply = "प्रणाम! मैं आपकी कंपनी का AI हूँ। आदेश दें।";
-                    
-                    this.addBubble(reply, 'ai');
-                    this.speak(reply);
-                }, 800);
-            },
-
-            addBubble(text, type) {
-                const win = document.getElementById('chat-window');
-                win.innerHTML += `<div class="msg msg-${type} animate__animated animate__fadeInUp">${text}</div>`;
-                win.scrollTop = win.scrollHeight;
-            },
-
-            /* 🎙️ VOICE & NAVIGATION */
-            speak(t) {
-                window.speechSynthesis.cancel();
-                const m = new SpeechSynthesisUtterance(t);
-                m.lang = 'hi-IN';
-                window.speechSynthesis.speak(m);
-            },
-
-            startVoiceAI() {
-                const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if(!Rec) return alert("Browser Not Supported");
-                const r = new Rec();
-                r.lang = 'hi-IN';
-                r.onstart = () => document.getElementById('l-ring').classList.remove('hidden');
-                r.onresult = (e) => {
-                    const res = e.results[0][0].transcript;
-                    document.getElementById('l-ring').classList.add('hidden');
-                    document.getElementById('chat-input').value = res;
-                    this.sendMsg();
-                };
-                r.start();
-            },
-
-            navigate(id) {
-                document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-                document.getElementById('page-' + id).classList.add('active-page');
+            msg(t, c, id='') {
+                const b = document.getElementById('chat');
+                b.innerHTML += `<div class="bubble ${c}" ${id?`id="${id}"`:''}>${t}</div>`;
+                b.scrollTop = b.scrollHeight;
             }
         };
-
-        Core.init();
     </script>
 </body>
 </html>

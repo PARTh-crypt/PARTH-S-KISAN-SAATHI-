@@ -1,379 +1,121 @@
-const OPENAI_API_KEY = "YAHAN_APNI_REAL_KEY_DALO";
-<!DOCTYPE html>
-<html lang="hi">
+// App.js - Main Structure
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-<head>
+// Screens
+import HomeScreen from './screens/HomeScreen';
+import RechargeScreen from './screens/RechargeScreen';
+import ToolsScreen from './screens/ToolsScreen';
+import AIChatScreen from './screens/AIChatScreen';
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+const Tab = createBottomTabNavigator();
 
-<title>PARTH KISAN SAATHI</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-
-<style>
-
-body{
-font-family:sans-serif;
-background:#f0fdf4;
-margin:0;
-overflow:hidden;
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <StatusBar style="light" />
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={{
+            tabBarActiveTintColor: '#F9A825', // Harvest Gold
+            tabBarInactiveTintColor: '#2E7D32', // Farm Green
+            headerStyle: { backgroundColor: '#2E7D32' },
+            headerTintColor: '#fff',
+            headerTitleStyle: { fontWeight: 'bold' },
+          }}
+        >
+          <Tab.Screen name="Kisan Saathi" component={HomeScreen} />
+          <Tab.Screen name="Tools" component={ToolsScreen} />
+          <Tab.Screen name="Parth AI" component={AIChatScreen} />
+          <Tab.Screen name="Recharge" component={RechargeScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
+  );
 }
-
-.screen{
-position:fixed;
-inset:0;
-display:none;
-flex-direction:column;
-}
-
-.screen.active{
-display:flex;
-}
-
-.header{
-background:#065f46;
-color:white;
-padding:14px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-font-weight:bold;
-}
-
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:12px;
-padding:15px;
-overflow:auto;
-flex:1;
-}
-
-.tile{
-background:white;
-padding:18px;
-border-radius:18px;
-border:1px solid #ddd;
-text-align:center;
-font-weight:bold;
-cursor:pointer;
-}
-
-.tile:active{
-transform:scale(.95);
-background:#ecfdf5;
-}
-
-.sheet{
-position:fixed;
-bottom:0;
-width:100%;
-background:white;
-border-radius:25px 25px 0 0;
-padding:20px;
-max-height:70vh;
-overflow:auto;
-display:none;
-}
-
-.crop{
-padding:14px;
-border:1px solid #ddd;
-border-radius:12px;
-margin-bottom:10px;
-cursor:pointer;
-}
-
-.chat{
-flex:1;
-overflow:auto;
-padding:15px;
-display:flex;
-flex-direction:column;
-gap:10px;
-background:#f1f5f9;
-}
-
-.msg{
-padding:12px;
-border-radius:16px;
-max-width:80%;
-}
-
-.user{
-align-self:flex-end;
-background:#065f46;
-color:white;
-}
-
-.bot{
-align-self:flex-start;
-background:white;
-border:1px solid #ddd;
-}
-
-.inputbar{
-display:flex;
-gap:10px;
-padding:10px;
-background:white;
-}
-
-input{
-flex:1;
-padding:12px;
-border-radius:12px;
-border:1px solid #ccc;
-}
-
-button{
-background:#10b981;
-color:white;
-border:none;
-padding:12px 18px;
-border-radius:12px;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div id="home" class="screen active">
-
-<div class="header">
-🏹 PARTH KISAN SAATHI
-<button onclick="App.openAI()">🤖</button>
-</div>
-
-<div id="grid" class="grid"></div>
-
-</div>
-
-<div id="sheet" class="sheet">
-
-<h2 id="sheetTitle" class="font-bold mb-4"></h2>
-
-<div id="cropList"></div>
-
-</div>
-
-<div id="ai" class="screen">
-
-<div class="header">
-PARTH AI
-<button onclick="App.closeAI()">X</button>
-</div>
-
-<div id="chat" class="chat">
-
-<div class="msg bot">
-Namaste! Farming question pooch sakte hain.
-</div>
-
-</div>
-
-<div class="inputbar">
-
-<input id="input" placeholder="Question poochiye">
-
-<button onclick="App.send()">Send</button>
-
-</div>
-
-</div>
-
-<script>
-
-const OPENAI_API_KEY = "YAHAN_API_KEY_DALO";
-
-const App={
-
-db:{
-"Crop Doctor":{
-icon:"🏥",
-crops:{
-"Wheat":"Rust disease control Propiconazole spray",
-"Paddy":"Blast control Tricyclazole spray",
-"Tomato":"Fruit borer Coragen spray",
-"Potato":"Late blight Mancozeb spray"
-}
-},
-
-"Market Rates":{
-icon:"📈",
-crops:{
-"Wheat":"Rate ₹2500 per quintal",
-"Paddy":"Rate ₹3200 per quintal",
-"Mustard":"Rate ₹5500 per quintal"
-}
-},
-
-"Seeds":{
-icon:"🌱",
-crops:{
-"Wheat":"HD2967 high yield variety",
-"Paddy":"PR126 early variety"
-}
-}
-
-},
-
-init(){
-
-let grid=document.getElementById("grid")
-
-Object.keys(this.db).forEach(cat=>{
-
-let div=document.createElement("div")
-
-div.className="tile"
-
-div.innerHTML=this.db[cat].icon+"<br>"+cat
-
-div.onclick=()=>this.openCategory(cat)
-
-grid.appendChild(div)
-
-})
-
-},
-
-openCategory(cat){
-
-let sheet=document.getElementById("sheet")
-
-sheet.style.display="block"
-
-document.getElementById("sheetTitle").innerText=cat
-
-let list=document.getElementById("cropList")
-
-list.innerHTML=""
-
-let crops=this.db[cat].crops
-
-Object.keys(crops).forEach(c=>{
-
-let div=document.createElement("div")
-
-div.className="crop"
-
-div.innerText=c
-
-div.onclick=()=>{
-
-sheet.style.display="none"
-
-this.openAI()
-
-this.askAI(crops[c])
-
-}
-
-list.appendChild(div)
-
-})
-
-},
-
-openAI(){
-
-document.getElementById("ai").classList.add("active")
-
-},
-
-closeAI(){
-
-document.getElementById("ai").classList.remove("active")
-
-},
-
-add(role,text){
-
-let chat=document.getElementById("chat")
-
-let div=document.createElement("div")
-
-div.className="msg "+role
-
-div.innerText=text
-
-chat.appendChild(div)
-
-chat.scrollTop=chat.scrollHeight
-
-},
-
-send(){
-
-let input=document.getElementById("input")
-
-if(!input.value)return
-
-this.add("user",input.value)
-
-this.askAI(input.value)
-
-input.value=""
-
-},
-
-async askAI(q){
-
-this.add("bot","Thinking...")
-
-try{
-
-let res=await fetch("https://api.openai.com/v1/chat/completions",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json",
-"Authorization":"Bearer "+OPENAI_API_KEY
-},
-
-body:JSON.stringify({
-
-model:"gpt-4o-mini",
-
-messages:[
-{
-role:"system",
-content:"You are Parth AI farming expert. Answer in simple Hinglish with practical tips."
-},
-{
-role:"user",
-content:q
-}
-]
-
-})
-
-})
-
-let data=await res.json()
-
-let text=data.choices[0].message.content
-
-document.querySelector(".bot:last-child").innerText=text
-
-}catch(e){
-
-document.querySelector(".bot:last-child").innerText="AI server error"
-
-}
-
-}
-
-}
-
-window.onload=()=>App.init()
-
-</script>
-
-</body>
-</html>
+            // screens/RechargeScreen.js
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+
+const RechargeScreen = () => {
+  const [balance, setBalance] = useState(150); // Example Balance
+
+  const packages = [
+    { id: 1, name: "Starter Pack", credits: 10, price: 99, icon: "🌱" },
+    { id: 2, name: "Harvest Pack", credits: 50, price: 450, icon: "🌾" },
+    { id: 3, name: "Expert Pack", credits: 100, price: 800, icon: "🚜" },
+  ];
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Parth's Kisan Wallet</Text>
+        <Text style={styles.balance}>Current Balance: ₹{balance}</Text>
+        <Text style={styles.credits}>Credits: {Math.floor(balance / 10)}</Text>
+      </View>
+
+      <View style={styles.grid}>
+        {packages.map((pkg) => (
+          <TouchableOpacity key={pkg.id} style={styles.card}>
+            <Text style={styles.icon}>{pkg.icon}</Text>
+            <Text style={styles.pkgName}>{pkg.name}</Text>
+            <Text style={styles.pkgCredits}>{pkg.credits} Credits</Text>
+            <Text style={styles.price}>₹{pkg.price}</Text>
+            <TouchableOpacity style={styles.btn}>
+              <Text style={styles.btnText}>Recharge</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#f5f5f5', padding: 20 },
+  header: { alignItems: 'center', padding: 20, backgroundColor: '#2E7D32', borderRadius: 15, marginBottom: 20 },
+  title: { color: '#fff', fontSize: 24, fontWeight: 'bold' },
+  balance: { color: '#F9A825', fontSize: 32, fontWeight: 'bold', marginTop: 10 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+  card: { width: '48%', backgroundColor: '#fff', padding: 15, borderRadius: 10, marginBottom: 15, elevation: 3 },
+  icon: { fontSize: 30, textAlign: 'center' },
+  pkgName: { textAlign: 'center', fontWeight: 'bold', fontSize: 16 },
+  pkgCredits: { textAlign: 'center', color: '#555' },
+  price: { textAlign: 'center', fontSize: 18, color: '#2E7D32', fontWeight: 'bold' },
+  btn: { backgroundColor: '#F9A825', padding: 8, borderRadius: 5, marginTop: 10, alignItems: 'center' },
+  btnText: { color: '#fff', fontWeight: 'bold' }
+});
+
+export default RechargeScreen;
+
+          // screens/AIChatScreen.js
+// This screen features a chat interface where the user speaks to Parth AI
+const AIChatScreen = () => {
+  return (
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      {/* Header */}
+      <View style={{ backgroundColor: '#2E7D32', padding: 20, alignItems: 'center' }}>
+        <Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>Parth AI</Text>
+        <Text style={{ color: '#F9A825', fontSize: 14 }}>Online • Ready to help</Text>
+      </View>
+
+      {/* Chat Area */}
+      <ScrollView style={{ padding: 15 }}>
+        <MessageBubble text="Namaste Kisan! How can I help you today?" isUser={false} />
+        <MessageBubble text="My wheat crop is turning yellow." isUser={true} />
+        <MessageBubble text="This could be Nitrogen deficiency. I recommend applying Urea. Would you like to calculate the dosage?" isUser={false} />
+      </ScrollView>
+
+      {/* Input Area */}
+      <View style={{ flexDirection: 'row', padding: 10, borderTopWidth: 1, borderColor: '#ddd' }}>
+        <TextInput placeholder="Type or speak..." style={{ flex: 1, padding: 10, borderWidth: 1, borderRadius: 20 }} />
+        <TouchableOpacity style={{ backgroundColor: '#2E7D32', padding: 10, borderRadius: 20, marginLeft: 10 }}>
+           <Text style={{ color: '#fff' }}>🎤</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};

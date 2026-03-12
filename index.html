@@ -1,207 +1,379 @@
+const OPENAI_API_KEY = "YAHAN_APNI_REAL_KEY_DALO";
 <!DOCTYPE html>
 <html lang="hi">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SIA Ultra Fast - Parth Kisan Sathi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Fredoka', sans-serif; background: #f1f5f9; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .header { background: #166534; padding: 15px; border-radius: 0 0 25px 25px; text-align: center; color: white; }
-        
-        /* Category Row */
-        .cat-row { display: flex; gap: 8px; overflow-x: auto; padding: 12px; background: white; border-bottom: 1px solid #ddd; scrollbar-width: none; }
-        .cat-row::-webkit-scrollbar { display: none; }
-        .btn-cat { min-width: 90px; padding: 8px; background: #f0fdf4; border-radius: 15px; border: 2px solid transparent; font-size: 11px; font-weight: 700; cursor: pointer; }
-        .btn-cat.active { border-color: #fbbf24; background: #fffbeb; }
 
-        /* Tools Grid */
-        #tools-grid { flex: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr; gap: 8px; padding-bottom: 90px; }
-        .card { background: white; padding: 15px; border-radius: 20px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid #fbbf24; cursor: pointer; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        /* SIA Chat Full Screen */
-        #sia-chat { position: fixed; inset: 0; background: white; z-index: 9999; display: none; flex-direction: column; }
-        .chat-head { background: #0f172a; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .msgs { flex: 1; overflow-y: auto; padding: 15px; background: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
-        
-        .bbl { max-width: 85%; padding: 12px 16px; border-radius: 20px; font-size: 14px; line-height: 1.4; }
-        .u { align-self: flex-end; background: #166534; color: white; border-bottom-right-radius: 2px; }
-        .s { align-self: flex-start; background: white; border: 1px solid #e2e8f0; border-bottom-left-radius: 2px; }
+<title>PARTH KISAN SAATHI</title>
 
-        /* Fast Input */
-        .input-box { background: white; padding: 10px 15px 25px; border-top: 1px solid #eee; display: flex; gap: 8px; align-items: center; }
-        .in { flex: 1; background: #f1f5f9; border-radius: 20px; padding: 10px 15px; border: none; outline: none; font-weight: 600; }
-        .btn { width: 45px; height: 45px; border-radius: 50%; border: none; color: white; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        
-        .loader { display: flex; gap: 4px; padding: 10px; }
-        .dot { width: 6px; height: 6px; background: #fbbf24; border-radius: 50%; animation: pulse 1.2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-    </style>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+body{
+font-family:sans-serif;
+background:#f0fdf4;
+margin:0;
+overflow:hidden;
+}
+
+.screen{
+position:fixed;
+inset:0;
+display:none;
+flex-direction:column;
+}
+
+.screen.active{
+display:flex;
+}
+
+.header{
+background:#065f46;
+color:white;
+padding:14px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+font-weight:bold;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+padding:15px;
+overflow:auto;
+flex:1;
+}
+
+.tile{
+background:white;
+padding:18px;
+border-radius:18px;
+border:1px solid #ddd;
+text-align:center;
+font-weight:bold;
+cursor:pointer;
+}
+
+.tile:active{
+transform:scale(.95);
+background:#ecfdf5;
+}
+
+.sheet{
+position:fixed;
+bottom:0;
+width:100%;
+background:white;
+border-radius:25px 25px 0 0;
+padding:20px;
+max-height:70vh;
+overflow:auto;
+display:none;
+}
+
+.crop{
+padding:14px;
+border:1px solid #ddd;
+border-radius:12px;
+margin-bottom:10px;
+cursor:pointer;
+}
+
+.chat{
+flex:1;
+overflow:auto;
+padding:15px;
+display:flex;
+flex-direction:column;
+gap:10px;
+background:#f1f5f9;
+}
+
+.msg{
+padding:12px;
+border-radius:16px;
+max-width:80%;
+}
+
+.user{
+align-self:flex-end;
+background:#065f46;
+color:white;
+}
+
+.bot{
+align-self:flex-start;
+background:white;
+border:1px solid #ddd;
+}
+
+.inputbar{
+display:flex;
+gap:10px;
+padding:10px;
+background:white;
+}
+
+input{
+flex:1;
+padding:12px;
+border-radius:12px;
+border:1px solid #ccc;
+}
+
+button{
+background:#10b981;
+color:white;
+border:none;
+padding:12px 18px;
+border-radius:12px;
+}
+
+</style>
+
 </head>
+
 <body>
 
-    <div class="header">
-        <h1 class="text-xl font-bold">PARTH KISAN SATHI 🚜</h1>
-        <p class="text-[9px] text-yellow-300 font-bold uppercase tracking-widest">SIA Ultra Fast AI</p>
-    </div>
+<div id="home" class="screen active">
 
-    <div class="cat-row" id="cats"></div>
-    <div id="tools-grid"></div>
+<div class="header">
+🏹 PARTH KISAN SAATHI
+<button onclick="App.openAI()">🤖</button>
+</div>
 
-    <div id="sia-chat">
-        <div class="chat-head">
-            <span class="font-bold">SIA (PARTH'S AI) ✨</span>
-            <button onclick="App.toggle()" class="text-xl">✕</button>
-        </div>
-        <div id="msg-flow" class="msgs">
-            <div class="bbl s">Namaste! Poochiye, main turant jawab dene ke liye taiyar hoon. 😊</div>
-        </div>
-        <div class="input-box">
-            <button onclick="document.getElementById('pic').click()" class="btn bg-gray-500">📸</button>
-            <input id="sia-in" type="text" placeholder="Sawwal likhein..." class="in">
-            <button onclick="App.mic()" class="btn bg-red-500">🎤</button>
-            <button onclick="App.send()" class="btn bg-green-700">➤</button>
-        </div>
-    </div>
+<div id="grid" class="grid"></div>
 
-    <div class="fixed bottom-5 left-5 right-5 h-14 bg-black/90 rounded-full flex justify-around items-center z-[5000]">
-        <button onclick="location.reload()" class="text-white text-lg">🏠</button>
-        <button onclick="App.toggle()" class="bg-yellow-500 w-12 h-12 rounded-full -mt-8 border-4 border-white text-xl">🤖</button>
-        <button onclick="App.toggle()" class="text-white text-lg">💬</button>
-    </div>
+</div>
 
-    <input type="file" id="pic" class="hidden" accept="image/*" onchange="App.handlePic(event)">
+<div id="sheet" class="sheet">
+
+<h2 id="sheetTitle" class="font-bold mb-4"></h2>
+
+<div id="cropList"></div>
+
+</div>
+
+<div id="ai" class="screen">
+
+<div class="header">
+PARTH AI
+<button onclick="App.closeAI()">X</button>
+</div>
+
+<div id="chat" class="chat">
+
+<div class="msg bot">
+Namaste! Farming question pooch sakte hain.
+</div>
+
+</div>
+
+<div class="inputbar">
+
+<input id="input" placeholder="Question poochiye">
+
+<button onclick="App.send()">Send</button>
+
+</div>
+
+</div>
 
 <script>
-    const apiKey = ""; // API Key
 
-    const App = {
-        active: "Anaj 🌾",
-        data: {
-            "Anaj 🌾": ["Gehu", "Dhan", "Urea", "Nano Urea", "Mitti", "Bima", "Bhav", "Store", "Beej", "Khad"],
-            "Sabji 🍅": ["Tamatar", "Aloo", "Pyaz", "Mirchi", "Organic", "Drip", "Poly", "Mandi", "Gobi", "Loki"],
-            "Pashu 🐄": ["Doodh", "Gaye", "Bhains", "Chara", "Bakra", "Murgi", "Machine", "Loan", "Tika", "Feed"],
-            "Mitti 🏜️": ["PH", "Zinc", "Nitrogen", "Kali", "Gobar", "Level", "Nami", "Health", "Gypsum", "Lab"],
-            "Sarkari 🏛️": ["PM Kisan", "KCC", "Tractor", "Solar", "Subsidy", "Bima", "Gramin", "Bank", "Panchayat", "List"],
-            "Mausam ☁️": ["Rain", "Heat", "Cold", "Storm", "Frost", "Wind", "Cloud", "Sinchai", "App", "Alert"],
-            "Organic 🍃": ["Vermicompost", "Neem", "Bio", "Nature", "Jeevamrut", "Mulch", "Rotation", "Gobar", "Cert", "Manual"],
-            "Machine 🚜": ["Repair", "Tiller", "Drone", "Pump", "Solar", "Tools", "Harrow", "Seed Drill", "Harvester", "Engine"],
-            "Dawai 💊": ["Keet", "Herb", "Fung", "Safety", "Dose", "Expiry", "Trap", "Brands", "Mix", "Seed Treat"],
-            "Khad 🧪": ["Urea", "DAP", "NPK", "Zinc", "Potash", "Boron", "Sulphur", "Liquid", "Micro", "Waste"],
-            "Market 📈": ["Rate", "Direct", "Online", "History", "Buyer", "Pack", "Export", "Store", "Bill", "Broker"],
-            "Sinchai 💧": ["Drip", "Sprink", "Borewell", "Canal", "Solar", "Pipe", "Motor", "Filter", "Timing", "Pump"],
-            "Beej 🌱": ["Wheat", "Rice", "Mustard", "Cotton", "Corn", "Veg", "Test", "Hybrid", "Desi", "Store"],
-            "Business 💰": ["Dairy", "Honey", "Fish", "Mushroom", "Flower", "Agro", "Agency", "Processing", "Loan", "Profit"],
-            "Phal 🍎": ["Mango", "Lemon", "Banana", "Guava", "Papaya", "Anar", "Graft", "Pick", "Orchard", "Apple"]
-        },
+const OPENAI_API_KEY = "YAHAN_API_KEY_DALO";
 
-        init() {
-            this.renderCats();
-            this.renderTools();
-            document.getElementById('sia-in').addEventListener('keypress', (e) => { if(e.key === 'Enter') this.send(); });
-        },
+const App={
 
-        renderCats() {
-            const row = document.getElementById('cats');
-            row.innerHTML = Object.keys(this.data).map(c => `
-                <div class="btn-cat ${c === this.active ? 'active' : ''}" onclick="App.setCat('${c}')">${c}</div>
-            `).join('');
-        },
+db:{
+"Crop Doctor":{
+icon:"🏥",
+crops:{
+"Wheat":"Rust disease control Propiconazole spray",
+"Paddy":"Blast control Tricyclazole spray",
+"Tomato":"Fruit borer Coragen spray",
+"Potato":"Late blight Mancozeb spray"
+}
+},
 
-        setCat(c) { this.active = c; this.renderCats(); this.renderTools(); },
+"Market Rates":{
+icon:"📈",
+crops:{
+"Wheat":"Rate ₹2500 per quintal",
+"Paddy":"Rate ₹3200 per quintal",
+"Mustard":"Rate ₹5500 per quintal"
+}
+},
 
-        renderTools() {
-            const grid = document.getElementById('tools-grid');
-            grid.innerHTML = this.data[this.active].map(t => `
-                <div class="card" onclick="App.askSIA('${t}')">
-                    <span>⚡</span>
-                    <div><b class="text-sm">${t}</b><p class="text-[8px] text-green-600 font-bold uppercase">Get Solution</p></div>
-                </div>
-            `).join('');
-        },
+"Seeds":{
+icon:"🌱",
+crops:{
+"Wheat":"HD2967 high yield variety",
+"Paddy":"PR126 early variety"
+}
+}
 
-        toggle() { const p = document.getElementById('sia-chat'); p.style.display = (p.style.display === 'flex' ? 'none' : 'flex'); },
+},
 
-        add(role, text) {
-            const f = document.getElementById('msg-flow');
-            f.innerHTML += `<div class="bbl ${role}">${text.replace(/[*#_~`>]/g, '')}</div>`;
-            f.scrollTop = f.scrollHeight;
-        },
+init(){
 
-        askSIA(t) { this.toggle(); const q = `${this.active} mein ${t} ka short ilaj batayein.`; this.add("u", q); this.call(q); },
+let grid=document.getElementById("grid")
 
-        send() { const i = document.getElementById('sia-in'); if(!i.value) return; this.add("u", i.value); this.call(i.value); i.value = ""; },
+Object.keys(this.db).forEach(cat=>{
 
-        async call(q) {
-            const f = document.getElementById('msg-flow');
-            const id = 'L' + Date.now();
-            f.innerHTML += `<div class="loader" id="${id}"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-            f.scrollTop = f.scrollHeight;
+let div=document.createElement("div")
 
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: q }] }],
-                        systemInstruction: { parts: [{ text: "You are SIA. Give short, instant farming answers in Hinglish. No markdown symbols like * or #. Be fast. Use cute emojis." }] }
-                    })
-                });
-                const d = await res.json();
-                document.getElementById(id).remove();
-                const r = d.candidates[0].content.parts[0].text;
-                this.add("s", r);
-                this.speak(r);
-            } catch(e) { document.getElementById(id).innerHTML = "Connecting..."; setTimeout(() => this.call(q), 1000); }
-        },
+div.className="tile"
 
-        handlePic(e) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const b64 = ev.target.result.split(',')[1];
-                this.add("u", "Analyzing Image...");
-                this.analyze(b64);
-            };
-            reader.readAsDataURL(file);
-        },
+div.innerHTML=this.db[cat].icon+"<br>"+cat
 
-        async analyze(b64) {
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: "Bataiye photo me kya samasya hai short me." }, { inlineData: { mimeType: "image/png", data: b64 } }] }]
-                    })
-                });
-                const d = await res.json();
-                const r = d.candidates[0].content.parts[0].text;
-                this.add("s", r);
-                this.speak(r);
-            } catch(e) { this.add("s", "Error. Try again."); }
-        },
+div.onclick=()=>this.openCategory(cat)
 
-        mic() {
-            const R = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if(!R) return;
-            const r = new R(); r.lang = 'hi-IN';
-            r.onresult = (e) => { document.getElementById('sia-in').value = e.results[0][0].transcript; this.send(); };
-            r.start();
-        },
+grid.appendChild(div)
 
-        speak(t) {
-            if('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const u = new SpeechSynthesisUtterance(t.replace(/[*#_~`>]/g, ''));
-                u.lang = 'hi-IN';
-                window.speechSynthesis.speak(u);
-            }
-        }
-    };
+})
 
-    window.onload = () => App.init();
+},
+
+openCategory(cat){
+
+let sheet=document.getElementById("sheet")
+
+sheet.style.display="block"
+
+document.getElementById("sheetTitle").innerText=cat
+
+let list=document.getElementById("cropList")
+
+list.innerHTML=""
+
+let crops=this.db[cat].crops
+
+Object.keys(crops).forEach(c=>{
+
+let div=document.createElement("div")
+
+div.className="crop"
+
+div.innerText=c
+
+div.onclick=()=>{
+
+sheet.style.display="none"
+
+this.openAI()
+
+this.askAI(crops[c])
+
+}
+
+list.appendChild(div)
+
+})
+
+},
+
+openAI(){
+
+document.getElementById("ai").classList.add("active")
+
+},
+
+closeAI(){
+
+document.getElementById("ai").classList.remove("active")
+
+},
+
+add(role,text){
+
+let chat=document.getElementById("chat")
+
+let div=document.createElement("div")
+
+div.className="msg "+role
+
+div.innerText=text
+
+chat.appendChild(div)
+
+chat.scrollTop=chat.scrollHeight
+
+},
+
+send(){
+
+let input=document.getElementById("input")
+
+if(!input.value)return
+
+this.add("user",input.value)
+
+this.askAI(input.value)
+
+input.value=""
+
+},
+
+async askAI(q){
+
+this.add("bot","Thinking...")
+
+try{
+
+let res=await fetch("https://api.openai.com/v1/chat/completions",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json",
+"Authorization":"Bearer "+OPENAI_API_KEY
+},
+
+body:JSON.stringify({
+
+model:"gpt-4o-mini",
+
+messages:[
+{
+role:"system",
+content:"You are Parth AI farming expert. Answer in simple Hinglish with practical tips."
+},
+{
+role:"user",
+content:q
+}
+]
+
+})
+
+})
+
+let data=await res.json()
+
+let text=data.choices[0].message.content
+
+document.querySelector(".bot:last-child").innerText=text
+
+}catch(e){
+
+document.querySelector(".bot:last-child").innerText="AI server error"
+
+}
+
+}
+
+}
+
+window.onload=()=>App.init()
+
 </script>
+
 </body>
 </html>
